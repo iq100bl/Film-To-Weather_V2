@@ -16,4 +16,8 @@
     <ProjectReference Include="..\DatabaseAccess\DatabaseAccess.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Api\Weather\Entities\" />
+  </ItemGroup>
+
 </Project>

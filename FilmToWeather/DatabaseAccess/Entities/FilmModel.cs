@@ -15,8 +15,8 @@ namespace DatabaseAccess.Entities
         public string? EnOverview { get; set; }
         public string? EnTitle { get; set; }
         public string? RuPosterPart { get; set; }
-        public string? Overview { get; set; }
+        public string? RuOverview { get; set; }
         public string? RuTitle { get; set; }
-        public ICollection<GenreModel>? Genries { get; set; }
+        public ICollection<GenreModel> Genries { get; set; }
     }
 }

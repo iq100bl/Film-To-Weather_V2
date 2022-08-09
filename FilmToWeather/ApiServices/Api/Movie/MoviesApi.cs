@@ -6,19 +6,15 @@ using Microsoft.Extensions.Configuration;
 
 namespace ApiServices.Api.Movie
 {
-    public interface IMoviesApi
-    {
-        Task<GenreModel[]> GetGenries();
-    }
-
-    public class MoviesApi : IMoviesApi
+    internal class MoviesApi : IMoviesApi
     {
         private readonly string _moviesApiKey;
         private readonly string _filmsBaseUrl;
         private readonly string _languageEn = "en-US";
         private readonly string _languageRu = "ru-RU";
-        private readonly string _genresMovies = "/genre/movie/list";
-        private readonly string _recommendedMovies = "/genre/movie/list";
+        private readonly string _genresMovies = "genre/movie/list";
+        private readonly string _recommendedMovies = "genre/movie/list";
+        private readonly string _movieDetails = "movie";
 
         public MoviesApi(IConfiguration configuration)
         {
@@ -26,24 +22,39 @@ namespace ApiServices.Api.Movie
             _filmsBaseUrl = configuration["BaseUrlMovies"];
         }
 
-        public async Task<FilmModel[]> GetRecommendedFilms(int page, string filters, string language)
+        public async Task<MovieResponce> GetDetailsMovieForAnotherLang(int id, string language)
+        {
+            // i taking recommended movies with one lang, so i query data for second lang before save it in DB
+            var info = _filmsBaseUrl
+                .AppendPathSegments(_movieDetails, id)
+                .SetQueryParams(new
+                {
+                    api_key = _moviesApiKey,
+                    language = language == _languageEn ? _languageRu : _languageEn,
+                });
+            return await CallApi(() => info.GetJsonAsync<MovieResponce>());
+        }
+
+        public async Task<MoviesResponce> GetRecommendedFilms(int page, string filters, string language)
         {
             var movies = _filmsBaseUrl.AppendPathSegment(_recommendedMovies)
                 .SetQueryParams(new
                 {
                     api_key = _moviesApiKey,
-                    language = language,
+                    language,
                     sort_by = "vote_count.desc",
                     include_adult = false,
                     include_video = false,
-                    page = page,
+                    page,
                     with_genres = filters, // , это и (2C&) | это или 7C&
                     with_watch_monetization_types = "flatrate"
                 });
+            return await CallApi(() => movies.GetJsonAsync<MoviesResponce>());
         }
 
         public async Task<GenreModel[]> GetGenries()
         {
+            //Me need two queries, because i working with two lang. later merging the results
             var genresEn = _filmsBaseUrl
                 .AppendPathSegment(_genresMovies)
                 .SetQueryParams(new
@@ -59,9 +70,9 @@ namespace ApiServices.Api.Movie
                     language = _languageRu,
                 });
 
-            var arrayGenresEn = await CallApi(() => genresEn.GetJsonAsync<GenresEnResponce>());
-            var arrayGenresRu = await CallApi(() => genresRu.GetJsonAsync<GenresRuResponce>());
-            return arrayGenresEn.GenresEnResponces.Join(arrayGenresRu.GenresRuResponces,
+            var genresEnResponce = await CallApi(() => genresEn.GetJsonAsync<GenresEnResponce>());
+            var genresRuResponce = await CallApi(() => genresRu.GetJsonAsync<GenresRuResponce>());
+            return genresEnResponce.GenresEnResponces.Join(genresRuResponce.GenresRuResponces,
                 genreEn => genreEn.Id,
                 genreRu => genreRu.Id,
                 (genreEn, genreRu) => new GenreModel

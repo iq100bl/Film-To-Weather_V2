@@ -2,7 +2,7 @@
 
 namespace ApiServices.Api.Movie.Entities.Response
 {
-    internal class GenreEnResponce
+    public class GenreEnResponce
     {
         [JsonProperty("id")]
         public int Id { get; set; }

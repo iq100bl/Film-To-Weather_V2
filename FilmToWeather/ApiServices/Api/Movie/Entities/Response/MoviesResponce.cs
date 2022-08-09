@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ApiServices.Api.Movie.Entities.Response
 {
-    internal class MoviesResponce
+    public class MoviesResponce
     {
         [JsonProperty("page")]
         public int Page { get; set; }
