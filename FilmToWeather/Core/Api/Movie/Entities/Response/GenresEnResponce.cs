@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace ApiServices.Api.Movie.Entities.Response
+namespace Core.Api.Movie.Entities.Response
 {
     internal class GenresEnResponce
     {

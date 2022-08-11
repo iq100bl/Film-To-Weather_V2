@@ -1,7 +1,7 @@
-﻿using ApiServices.Api.Movie.Entities.Response;
+﻿using Core.Api.Movie.Entities.Response;
 using DatabaseAccess.Entities;
 
-namespace ApiServices.Api.Movie
+namespace Core.Api.Movie
 {
     public interface IMoviesApi
     {

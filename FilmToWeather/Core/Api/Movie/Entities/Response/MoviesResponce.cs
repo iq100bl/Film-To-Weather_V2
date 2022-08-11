@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApiServices.Api.Movie.Entities.Response
+namespace Core.Api.Movie.Entities.Response
 {
     public class MoviesResponce
     {

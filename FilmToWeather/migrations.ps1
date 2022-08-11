@@ -4,7 +4,7 @@ Param(
     [string[]]$BuildArguments
 )
 
-Set-Location -Path "./WebApplication"
+Set-Location -Path "./WebApplicationMVC"
 
 & dotnet restore
 & dotnet build
