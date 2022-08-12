@@ -6,18 +6,20 @@ using Microsoft.Extensions.Configuration;
 
 namespace Core.Api.Weather
 {
-    internal class WeatherApi : IWeatherApi
+    internal class WeatherApi : IWeatherApi, IWeatherApiAutoLoad
     {
         private readonly IConectionHandler _conectionHandler;
         private readonly string _weatherApiKey;
         private readonly string _weatherBaseUrl;
+        private readonly string _weatherDocsForAutoLoad;
         private readonly string _currentWeather = "current.json";
         private readonly string _moonPhase = "astronomy.json";
-        public WeatherApi(IConfiguration configuration, IConectionHandler conectionHandler)
+        public WeatherApi(IConfiguration configuration, IConectionHandler conectionHandler, string weatherDocsForAutoLoad)
         {
             _weatherApiKey = configuration["WeatherApiKey"];
             _weatherBaseUrl = configuration["WeatherBaseUrl"];
             _conectionHandler = conectionHandler;
+            _weatherDocsForAutoLoad = weatherDocsForAutoLoad;
         }
 
         public async Task<WeatherApiBodyResponce> GetCurrentWeather(string city)
@@ -40,6 +42,11 @@ namespace Core.Api.Weather
             });
 
             return await _conectionHandler.CallApi(() => moonPhase.GetJsonAsync<MoonPhaseResponce>());
+        }
+        
+        public async Task<ConditionForAutoLoadResponce[]> GetWeatherConditionsDoc()
+        {
+            return await _conectionHandler.CallApi(() => _weatherDocsForAutoLoad.GetJsonAsync<ConditionForAutoLoadResponce[]>()); 
         }
     }
 }

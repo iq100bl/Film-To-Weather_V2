@@ -1,3 +1,4 @@
+using Core.DataPreload;
 using DatabaseAccess;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -13,8 +14,11 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationContext>();
 builder.Services.AddControllersWithViews();
+builder.Services.AddTransient<IPreloadInitService, PreloadService>();
 
 var app = builder.Build();
+
+await app.Services.GetRequiredService<IPreloadInitService>().Init();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
