@@ -11,6 +11,7 @@ namespace DatabaseAccess
         public DbSet<ConditionModel> Condition { get; set; }
         public DbSet<FilmModel> Film { get; set; }
         public DbSet<GenreModel> Genres { get; set; }
+        public DbSet<WeatherCondition> WeatherConditions { get; set; }
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
         }
@@ -18,6 +19,8 @@ namespace DatabaseAccess
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<ConditionModel>().HasKey(x => x.Code);
 
             builder.Entity<CityModel>()
                 .HasMany(x => x.Users)
@@ -28,10 +31,18 @@ namespace DatabaseAccess
                 .HasOne(x => x.Weather)
                 .WithOne(x => x.City).HasForeignKey<CityModel>(x => x.Id);
 
-            builder.Entity<WeatherModel>()
-                .HasMany(x => x.Conditions)
-                .WithMany(x => x.Weather)
-                .UsingEntity(x => x.ToTable("WeatherCondition")); //TODO проверить работоспособность
+            builder.Entity<WeatherCondition>()
+            .HasKey(t => new {t.Code, t.WeatherId});
+
+            builder.Entity<WeatherCondition>()
+                .HasOne(x => x.Weather)
+                .WithMany(x => x.WeatherConditions)
+                .HasForeignKey(x => x.WeatherId);
+
+            builder.Entity<WeatherCondition>()
+                .HasOne(x => x.Condition)
+                .WithMany(x => x.WeatherCondition)
+                .HasForeignKey(x => x.Code);
 
             builder.Entity<FilmModel>()
                .HasMany(x => x.Users)

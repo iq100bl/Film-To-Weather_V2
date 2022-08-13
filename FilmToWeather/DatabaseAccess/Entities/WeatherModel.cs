@@ -13,6 +13,6 @@ namespace DatabaseAccess.Entities
         public int Temperature { get; set; }
         public int IsDay { get; set; }
         public CityModel City { get; set; }
-        public ICollection<ConditionModel> Conditions { get; set; }
+        public ICollection<WeatherCondition> WeatherConditions { get; set; }
     }
 }

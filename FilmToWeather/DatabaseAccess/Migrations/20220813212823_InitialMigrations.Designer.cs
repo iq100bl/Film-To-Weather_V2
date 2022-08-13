@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DatabaseAccess.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20220811194451_InitialMigrations")]
+    [Migration("20220813212823_InitialMigrations")]
     partial class InitialMigrations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,21 +23,6 @@ namespace DatabaseAccess.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
-
-            modelBuilder.Entity("ConditionModelWeatherModel", b =>
-                {
-                    b.Property<int>("ConditionsId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("WeatherId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("ConditionsId", "WeatherId");
-
-                    b.HasIndex("WeatherId");
-
-                    b.ToTable("WeatherCondition", (string)null);
-                });
 
             modelBuilder.Entity("DatabaseAccess.Entities.CityModel", b =>
                 {
@@ -63,19 +48,21 @@ namespace DatabaseAccess.Migrations
 
             modelBuilder.Entity("DatabaseAccess.Entities.ConditionModel", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("Code")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Code"), 1L, 1);
 
-                    b.Property<string>("ConditionsDay")
+                    b.Property<string>("Day")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ConditionsNight")
+                    b.Property<string>("Night")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Code");
 
                     b.ToTable("Condition");
                 });
@@ -213,6 +200,21 @@ namespace DatabaseAccess.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("DatabaseAccess.Entities.WeatherCondition", b =>
+                {
+                    b.Property<int>("Code")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("WeatherId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Code", "WeatherId");
+
+                    b.HasIndex("WeatherId");
+
+                    b.ToTable("WeatherConditions");
                 });
 
             modelBuilder.Entity("DatabaseAccess.Entities.WeatherModel", b =>
@@ -402,21 +404,6 @@ namespace DatabaseAccess.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ConditionModelWeatherModel", b =>
-                {
-                    b.HasOne("DatabaseAccess.Entities.ConditionModel", null)
-                        .WithMany()
-                        .HasForeignKey("ConditionsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DatabaseAccess.Entities.WeatherModel", null)
-                        .WithMany()
-                        .HasForeignKey("WeatherId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("DatabaseAccess.Entities.CityModel", b =>
                 {
                     b.HasOne("DatabaseAccess.Entities.WeatherModel", "Weather")
@@ -437,6 +424,25 @@ namespace DatabaseAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("City");
+                });
+
+            modelBuilder.Entity("DatabaseAccess.Entities.WeatherCondition", b =>
+                {
+                    b.HasOne("DatabaseAccess.Entities.ConditionModel", "Condition")
+                        .WithMany("WeatherCondition")
+                        .HasForeignKey("Code")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DatabaseAccess.Entities.WeatherModel", "Weather")
+                        .WithMany("WeatherConditions")
+                        .HasForeignKey("WeatherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Condition");
+
+                    b.Navigation("Weather");
                 });
 
             modelBuilder.Entity("FilmModelGenreModel", b =>
@@ -525,10 +531,17 @@ namespace DatabaseAccess.Migrations
                     b.Navigation("Users");
                 });
 
+            modelBuilder.Entity("DatabaseAccess.Entities.ConditionModel", b =>
+                {
+                    b.Navigation("WeatherCondition");
+                });
+
             modelBuilder.Entity("DatabaseAccess.Entities.WeatherModel", b =>
                 {
                     b.Navigation("City")
                         .IsRequired();
+
+                    b.Navigation("WeatherConditions");
                 });
 #pragma warning restore 612, 618
         }

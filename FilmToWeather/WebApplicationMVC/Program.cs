@@ -1,7 +1,13 @@
+using Core.Api.ConectionService;
+using Core.Api.Movie;
+using Core.Api.Weather;
 using Core.DataPreload;
+using Core.Mapping;
+using Core.PreLoad;
 using DatabaseAccess;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,11 +20,18 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationContext>();
 builder.Services.AddControllersWithViews();
-builder.Services.AddTransient<IPreloadInitService, PreloadService>();
+
+
+builder.Services.AddTransient<IMoviesApi, MoviesApi>();
+builder.Services.AddTransient<IWeatherApi, WeatherApi>();
+builder.Services.AddTransient<IConectionHandler, ConectionHandler>();
+builder.Services.AddTransient<IWeatherApiAutoLoad, WeatherApi>();
+
+builder.Services.AddTransient<IInitializer, WeatherConditionsToDbPreload>();
+builder.Services.AddAutoMapper(typeof(ConditionMappingProfile).Assembly);
 
 var app = builder.Build();
-
-await app.Services.GetRequiredService<IPreloadInitService>().Init();
+app.Services.GetServices<IInitializer>().AsParallel().ForAll(x => x.InitializeAsync(app.Services.CreateScope().ServiceProvider.GetRequiredService<ApplicationContext>()));
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

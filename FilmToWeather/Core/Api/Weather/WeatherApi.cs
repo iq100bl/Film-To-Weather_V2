@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Core.Api.Weather
 {
-    internal class WeatherApi : IWeatherApi, IWeatherApiAutoLoad
+    public class WeatherApi : IWeatherApi, IWeatherApiAutoLoad
     {
         private readonly IConectionHandler _conectionHandler;
         private readonly string _weatherApiKey;
@@ -14,12 +14,12 @@ namespace Core.Api.Weather
         private readonly string _weatherDocsForAutoLoad;
         private readonly string _currentWeather = "current.json";
         private readonly string _moonPhase = "astronomy.json";
-        public WeatherApi(IConfiguration configuration, IConectionHandler conectionHandler, string weatherDocsForAutoLoad)
+        public WeatherApi(IConfiguration configuration, IConectionHandler conectionHandler)
         {
             _weatherApiKey = configuration["WeatherApiKey"];
             _weatherBaseUrl = configuration["WeatherBaseUrl"];
+            _weatherDocsForAutoLoad = configuration["WeatherDocsBaseUrl"];
             _conectionHandler = conectionHandler;
-            _weatherDocsForAutoLoad = weatherDocsForAutoLoad;
         }
 
         public async Task<WeatherApiBodyResponce> GetCurrentWeather(string city)
@@ -46,7 +46,8 @@ namespace Core.Api.Weather
         
         public async Task<ConditionForAutoLoadResponce[]> GetWeatherConditionsDoc()
         {
-            return await _conectionHandler.CallApi(() => _weatherDocsForAutoLoad.GetJsonAsync<ConditionForAutoLoadResponce[]>()); 
+            var x = await _conectionHandler.CallApi(() => _weatherDocsForAutoLoad.GetJsonAsync<ConditionForAutoLoadResponce[]>());
+            return x; 
         }
     }
 }

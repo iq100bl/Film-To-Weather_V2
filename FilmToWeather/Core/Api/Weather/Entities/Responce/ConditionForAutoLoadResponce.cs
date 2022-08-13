@@ -5,7 +5,7 @@ namespace Core.Api.Weather.Entities.Responce
     public class ConditionForAutoLoadResponce
     {
         [JsonProperty("code")]
-        public string Id { get; set; }
+        public int Code { get; set; }
 
         [JsonProperty("day")]
         public string Day { get; set; }

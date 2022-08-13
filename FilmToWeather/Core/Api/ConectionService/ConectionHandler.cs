@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Core.Api.ConectionService
 {
-    internal class ConectionHandler : IConectionHandler
+    public class ConectionHandler : IConectionHandler
     {
         public async Task<T> CallApi<T>(Func<Task<T>> func)
         {

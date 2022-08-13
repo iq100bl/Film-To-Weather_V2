@@ -27,14 +27,14 @@ namespace DatabaseAccess.Migrations
                 name: "Condition",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Code = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ConditionsDay = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConditionsNight = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Day = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Night = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Condition", x => x.Id);
+                    table.PrimaryKey("PK_Condition", x => x.Code);
                 });
 
             migrationBuilder.CreateTable(
@@ -151,23 +151,23 @@ namespace DatabaseAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "WeatherCondition",
+                name: "WeatherConditions",
                 columns: table => new
                 {
-                    ConditionsId = table.Column<int>(type: "int", nullable: false),
+                    Code = table.Column<int>(type: "int", nullable: false),
                     WeatherId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WeatherCondition", x => new { x.ConditionsId, x.WeatherId });
+                    table.PrimaryKey("PK_WeatherConditions", x => new { x.Code, x.WeatherId });
                     table.ForeignKey(
-                        name: "FK_WeatherCondition_Condition_ConditionsId",
-                        column: x => x.ConditionsId,
+                        name: "FK_WeatherConditions_Condition_Code",
+                        column: x => x.Code,
                         principalTable: "Condition",
-                        principalColumn: "Id",
+                        principalColumn: "Code",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_WeatherCondition_Weather_WeatherId",
+                        name: "FK_WeatherConditions_Weather_WeatherId",
                         column: x => x.WeatherId,
                         principalTable: "Weather",
                         principalColumn: "Id",
@@ -370,8 +370,8 @@ namespace DatabaseAccess.Migrations
                 column: "UsersId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WeatherCondition_WeatherId",
-                table: "WeatherCondition",
+                name: "IX_WeatherConditions_WeatherId",
+                table: "WeatherConditions",
                 column: "WeatherId");
         }
 
@@ -399,7 +399,7 @@ namespace DatabaseAccess.Migrations
                 name: "UserFilmData");
 
             migrationBuilder.DropTable(
-                name: "WeatherCondition");
+                name: "WeatherConditions");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
