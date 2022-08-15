@@ -72,20 +72,6 @@ namespace DatabaseAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Weather",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TimeUpdate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Temperature = table.Column<int>(type: "int", nullable: false),
-                    IsDay = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Weather", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -103,6 +89,27 @@ namespace DatabaseAccess.Migrations
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Weather",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TimeUpdate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Temperature = table.Column<int>(type: "int", nullable: false),
+                    IsDay = table.Column<bool>(type: "bit", nullable: false),
+                    CodeCondition = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Weather", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Weather_Condition_CodeCondition",
+                        column: x => x.CodeCondition,
+                        principalTable: "Condition",
+                        principalColumn: "Code",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -145,30 +152,6 @@ namespace DatabaseAccess.Migrations
                     table.ForeignKey(
                         name: "FK_City_Weather_Id",
                         column: x => x.Id,
-                        principalTable: "Weather",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "WeatherConditions",
-                columns: table => new
-                {
-                    Code = table.Column<int>(type: "int", nullable: false),
-                    WeatherId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_WeatherConditions", x => new { x.Code, x.WeatherId });
-                    table.ForeignKey(
-                        name: "FK_WeatherConditions_Condition_Code",
-                        column: x => x.Code,
-                        principalTable: "Condition",
-                        principalColumn: "Code",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_WeatherConditions_Weather_WeatherId",
-                        column: x => x.WeatherId,
                         principalTable: "Weather",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -231,8 +214,8 @@ namespace DatabaseAccess.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
@@ -276,8 +259,8 @@ namespace DatabaseAccess.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -370,9 +353,9 @@ namespace DatabaseAccess.Migrations
                 column: "UsersId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WeatherConditions_WeatherId",
-                table: "WeatherConditions",
-                column: "WeatherId");
+                name: "IX_Weather_CodeCondition",
+                table: "Weather",
+                column: "CodeCondition");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -399,9 +382,6 @@ namespace DatabaseAccess.Migrations
                 name: "UserFilmData");
 
             migrationBuilder.DropTable(
-                name: "WeatherConditions");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
@@ -414,13 +394,13 @@ namespace DatabaseAccess.Migrations
                 name: "Film");
 
             migrationBuilder.DropTable(
-                name: "Condition");
-
-            migrationBuilder.DropTable(
                 name: "City");
 
             migrationBuilder.DropTable(
                 name: "Weather");
+
+            migrationBuilder.DropTable(
+                name: "Condition");
         }
     }
 }

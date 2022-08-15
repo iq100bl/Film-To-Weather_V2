@@ -24,10 +24,16 @@ namespace Core.PreLoad
             context.Database.OpenConnection();
             try
             {
-                //TODO сделать проверку есть ли они в Бд
                 var conditions = _mapper.Map<ConditionModel[]>(await _weatherApiAutoLoad.GetWeatherConditionsDoc());
                 context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.Condition ON");
-                context.Condition.AddRange(conditions);
+                if (context.Condition.Any())
+                {
+                    context.Condition.UpdateRange(conditions);
+                }
+                else
+                {
+                    context.Condition.AddRange(conditions);
+                }
                 context.SaveChanges();
                 context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.Condition OFF");
             }

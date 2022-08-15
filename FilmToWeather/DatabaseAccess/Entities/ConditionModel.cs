@@ -10,6 +10,6 @@ namespace DatabaseAccess.Entities
         public int Code { get; set; }
         public string Day { get; set; }
         public string Night { get; set; }
-        public ICollection<WeatherCondition> WeatherCondition { get; set; }
+        public ICollection<WeatherModel> WeatherModel { get; set; }
     }
 }

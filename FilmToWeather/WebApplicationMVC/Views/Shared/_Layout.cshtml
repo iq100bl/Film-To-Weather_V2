@@ -26,7 +26,18 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
-                    <partial name="_LoginPartial" />
+                    <ul class="nav">
+                        @if (User.Identity!.IsAuthenticated)
+                        {
+                            <li class="nav-item"><a asp-controller="Home" asp-action="Privacy" class="nav-link link-dark px-2">Hello, @User.Identity.Name</a></li>
+                            <li class="nav-item"><a asp-controller="User" asp-action="Logout" class="nav-link link-dark px-2">Logout</a></li>
+                        }
+                        else
+                        {
+                            <li class="nav-item"><a asp-controller="User" asp-action="Login" class="nav-link link-dark px-2">Login</a></li>
+                            <li class="nav-item"><a asp-controller="User" asp-action="Register" class="nav-link link-dark px-2">Sign up</a></li>
+                        }
+                    </ul>
                 </div>
             </div>
         </nav>
@@ -36,7 +47,6 @@
             @RenderBody()
         </main>
     </div>
-
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2022 - WebApplicationMVC - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>

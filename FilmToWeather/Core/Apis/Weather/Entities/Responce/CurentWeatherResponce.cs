@@ -5,7 +5,7 @@ namespace Core.Api.Weather.Entities.Responce
     public class CurrentWeatherResponce
     {
         [JsonProperty("temp_c")]
-        public int Temperature { get; set; }
+        public float Temperature { get; set; }
 
         [JsonProperty("is_day")]
         public int IsDay { get; set; }

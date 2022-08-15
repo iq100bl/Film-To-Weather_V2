@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DatabaseAccess.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20220813212823_InitialMigrations")]
+    [Migration("20220815175156_InitialMigrations")]
     partial class InitialMigrations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -202,29 +202,17 @@ namespace DatabaseAccess.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("DatabaseAccess.Entities.WeatherCondition", b =>
-                {
-                    b.Property<int>("Code")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("WeatherId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Code", "WeatherId");
-
-                    b.HasIndex("WeatherId");
-
-                    b.ToTable("WeatherConditions");
-                });
-
             modelBuilder.Entity("DatabaseAccess.Entities.WeatherModel", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("IsDay")
+                    b.Property<int>("CodeCondition")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsDay")
+                        .HasColumnType("bit");
 
                     b.Property<int>("Temperature")
                         .HasColumnType("int");
@@ -233,6 +221,8 @@ namespace DatabaseAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CodeCondition");
 
                     b.ToTable("Weather");
                 });
@@ -347,12 +337,10 @@ namespace DatabaseAccess.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -389,12 +377,10 @@ namespace DatabaseAccess.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -426,23 +412,15 @@ namespace DatabaseAccess.Migrations
                     b.Navigation("City");
                 });
 
-            modelBuilder.Entity("DatabaseAccess.Entities.WeatherCondition", b =>
+            modelBuilder.Entity("DatabaseAccess.Entities.WeatherModel", b =>
                 {
                     b.HasOne("DatabaseAccess.Entities.ConditionModel", "Condition")
-                        .WithMany("WeatherCondition")
-                        .HasForeignKey("Code")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DatabaseAccess.Entities.WeatherModel", "Weather")
-                        .WithMany("WeatherConditions")
-                        .HasForeignKey("WeatherId")
+                        .WithMany("WeatherModel")
+                        .HasForeignKey("CodeCondition")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Condition");
-
-                    b.Navigation("Weather");
                 });
 
             modelBuilder.Entity("FilmModelGenreModel", b =>
@@ -533,15 +511,13 @@ namespace DatabaseAccess.Migrations
 
             modelBuilder.Entity("DatabaseAccess.Entities.ConditionModel", b =>
                 {
-                    b.Navigation("WeatherCondition");
+                    b.Navigation("WeatherModel");
                 });
 
             modelBuilder.Entity("DatabaseAccess.Entities.WeatherModel", b =>
                 {
                     b.Navigation("City")
                         .IsRequired();
-
-                    b.Navigation("WeatherConditions");
                 });
 #pragma warning restore 612, 618
         }

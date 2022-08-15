@@ -8,6 +8,8 @@ using DatabaseAccess;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
+using DatabaseAccess.Entities;
+using Core.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,8 +19,15 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationContext>();
+builder.Services.AddIdentity<User, IdentityRole>(opt =>
+{
+    opt.Password.RequiredLength = 7;
+    opt.Password.RequireNonAlphanumeric = false;
+    opt.Password.RequireLowercase = false;
+    opt.Password.RequireUppercase = false;
+    opt.Password.RequireDigit = false;
+}).AddEntityFrameworkStores<ApplicationContext>();
+
 builder.Services.AddControllersWithViews();
 
 
@@ -26,12 +35,18 @@ builder.Services.AddTransient<IMoviesApi, MoviesApi>();
 builder.Services.AddTransient<IWeatherApi, WeatherApi>();
 builder.Services.AddTransient<IConectionHandler, ConectionHandler>();
 builder.Services.AddTransient<IWeatherApiAutoLoad, WeatherApi>();
+builder.Services.AddTransient<ITransferService, TransferService>();
 
 builder.Services.AddTransient<IInitializer, WeatherConditionsToDbPreload>();
+
 builder.Services.AddAutoMapper(typeof(ConditionMappingProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(CityMappingProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(WeathersMappingProfile).Assembly);
 
 var app = builder.Build();
-app.Services.GetServices<IInitializer>().AsParallel().ForAll(x => x.InitializeAsync(app.Services.CreateScope().ServiceProvider.GetRequiredService<ApplicationContext>()));
+app.Services.GetServices<IInitializer>().AsParallel().
+    ForAll(x => x.InitializeAsync(app.Services.CreateScope()
+    .ServiceProvider.GetRequiredService<ApplicationContext>()));
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -56,6 +71,5 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-app.MapRazorPages();
 
 app.Run();

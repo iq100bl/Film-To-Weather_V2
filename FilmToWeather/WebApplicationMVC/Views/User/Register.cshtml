@@ -1,0 +1,40 @@
+﻿@model WebApplicationMVC.Models.RegisterViewModel
+<body>
+    <div class="container">
+        <div class="row">
+            <form method="post" asp-action="Register">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <fieldset>
+                    <legend>Register:</legend>
+                    <div class="mb-3">
+                        <label for="email-input" class="form-label">Email:</label>
+                        <input asp-for="Email" type="text" id="email-input" class="form-control" placeholder="Name">
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password-input" class="form-label">Password:</label>
+                        <input asp-for="Password" type="password" id="password-input" class="form-control" placeholder="Password">
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password-confirm-input" class="form-label">Confirm Password:</label>
+                        <input asp-for="PasswordConfirm" type="password" id="password-confirm-input" class="form-control" placeholder="Confirm password">
+                        <span asp-validation-for="PasswordConfirm" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="city-input" class="form-label">Your City:</label>
+                        <input asp-for="City" type="text" id="city-input" class="form-control" placeholder="City">
+                        <span asp-validation-for="City" class="text-danger"></span>
+                    </div>
+                </fieldset>
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </form>
+        </div>
+    </div>
+</body>
+@section Scripts
+{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

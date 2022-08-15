@@ -5,7 +5,7 @@ namespace Core.Api.Weather.Entities.Responce
     public class ConditionResponce
     {
         [JsonProperty("code")]
-        public int Id { get; set; }
+        public int code { get; set; }
 
         [JsonProperty("text")]
         public string Condition { get; set; }
