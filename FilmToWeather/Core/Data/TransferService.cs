@@ -15,15 +15,13 @@ namespace Core.Data
 {
     public class TransferService : ITransferService
     {
-        private readonly IMoviesApi _movieApi;
         private readonly IWeatherApi _weatherApi;
         private readonly ApplicationContext _context;
         private readonly IMapper _mapper;
 
-        public TransferService(ApplicationContext context, IMoviesApi movieApi, IWeatherApi weatherApi, IMapper mapper)
+        public TransferService(ApplicationContext context, IWeatherApi weatherApi, IMapper mapper)
         {
             _context = context;
-            _movieApi = movieApi;
             _weatherApi = weatherApi;
             _mapper = mapper;
         }
@@ -31,7 +29,7 @@ namespace Core.Data
         public async Task<Guid> ValidityCheckedCityForUser(string city)
         {
             city = string.Concat(char.ToUpper(city[0]), city[1..]);
-            var cityCurrentUser = await _context.City.SingleOrDefaultAsync(x => x.City == city);
+            var cityCurrentUser = await _context.City.AsNoTracking().SingleOrDefaultAsync(x => x.City == city);
             if (cityCurrentUser != default)
             {
                 return cityCurrentUser.Id;
