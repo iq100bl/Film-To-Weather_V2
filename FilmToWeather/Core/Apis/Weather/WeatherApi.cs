@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Core.Api.Weather
 {
-    public class WeatherApi : IWeatherApi, IWeatherApiAutoLoad
+    public class WeatherApi : IWeatherApi, IWeatherApiPreLoad
     {
         private readonly IConectionHandler _conectionHandler;
         private readonly string _weatherApiKey;
@@ -44,9 +44,9 @@ namespace Core.Api.Weather
             return await _conectionHandler.CallApi(() => moonPhase.GetJsonAsync<MoonPhaseResponce>());
         }
         
-        public async Task<ConditionForAutoLoadResponce[]> GetWeatherConditionsDoc()
+        public async Task<ConditionForPreloadResponce[]> GetWeatherConditionsDoc()
         {
-            var x = await _conectionHandler.CallApi(() => _weatherDocsForAutoLoad.GetJsonAsync<ConditionForAutoLoadResponce[]>());
+            var x = await _conectionHandler.CallApi(() => _weatherDocsForAutoLoad.GetJsonAsync<ConditionForPreloadResponce[]>());
             return x; 
         }
     }

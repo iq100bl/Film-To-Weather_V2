@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Core.Api.Movie
 {
-    public class MoviesApi : IMoviesApi
+    public class MoviesApi : IMoviesApi, IMoviesApiPreload
     {
         private readonly string _moviesApiKey;
         private readonly string _moviesBaseUrl;

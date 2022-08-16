@@ -11,6 +11,7 @@ namespace DatabaseAccess
         public DbSet<ConditionModel> Condition { get; set; }
         public DbSet<FilmModel> Film { get; set; }
         public DbSet<GenreModel> Genres { get; set; }
+        public DbSet<MainFisitkaForProjectModel> Fisitkas { get; set; }
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
         }
@@ -39,12 +40,22 @@ namespace DatabaseAccess
             builder.Entity<FilmModel>()
                .HasMany(x => x.Users)
                .WithMany(x => x.Films)
-               .UsingEntity(x => x.ToTable("UserFilmData")); //TODO тоже проверить
+               .UsingEntity(x => x.ToTable("UserFilmData"));
 
             builder.Entity<FilmModel>()
                 .HasMany(x => x.Genries)
                .WithMany(x => x.Films)
-               .UsingEntity(x => x.ToTable("GenresFilms")); //TODO тоже проверить
+               .UsingEntity(x => x.ToTable("GenresFilms"));
+
+            builder.Entity<MainFisitkaForProjectModel>()
+                .HasOne(x => x.Condition)
+                .WithMany(x => x.MainFisitkasForProject)
+                .HasForeignKey(x => x.ConditionCode);
+
+            builder.Entity<MainFisitkaForProjectModel>()
+                .HasOne(x => x.Genre)
+                .WithMany(x => x.MainFisitkasForProject)
+                .HasForeignKey(x => x.GenreId);
         }
     }
 

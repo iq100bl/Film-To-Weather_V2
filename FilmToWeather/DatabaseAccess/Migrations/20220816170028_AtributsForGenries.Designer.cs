@@ -4,6 +4,7 @@ using DatabaseAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DatabaseAccess.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20220816170028_AtributsForGenries")]
+    partial class AtributsForGenries
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -128,27 +130,6 @@ namespace DatabaseAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Genres");
-                });
-
-            modelBuilder.Entity("DatabaseAccess.Entities.MainFisitkaForProjectModel", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("ConditionCode")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GenreId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ConditionCode");
-
-                    b.HasIndex("GenreId");
-
-                    b.ToTable("Fisitkas");
                 });
 
             modelBuilder.Entity("DatabaseAccess.Entities.User", b =>
@@ -420,25 +401,6 @@ namespace DatabaseAccess.Migrations
                     b.Navigation("Weather");
                 });
 
-            modelBuilder.Entity("DatabaseAccess.Entities.MainFisitkaForProjectModel", b =>
-                {
-                    b.HasOne("DatabaseAccess.Entities.ConditionModel", "Condition")
-                        .WithMany("MainFisitkasForProject")
-                        .HasForeignKey("ConditionCode")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DatabaseAccess.Entities.GenreModel", "Genre")
-                        .WithMany("MainFisitkasForProject")
-                        .HasForeignKey("GenreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Condition");
-
-                    b.Navigation("Genre");
-                });
-
             modelBuilder.Entity("DatabaseAccess.Entities.User", b =>
                 {
                     b.HasOne("DatabaseAccess.Entities.CityModel", "City")
@@ -549,14 +511,7 @@ namespace DatabaseAccess.Migrations
 
             modelBuilder.Entity("DatabaseAccess.Entities.ConditionModel", b =>
                 {
-                    b.Navigation("MainFisitkasForProject");
-
                     b.Navigation("WeatherModel");
-                });
-
-            modelBuilder.Entity("DatabaseAccess.Entities.GenreModel", b =>
-                {
-                    b.Navigation("MainFisitkasForProject");
                 });
 
             modelBuilder.Entity("DatabaseAccess.Entities.WeatherModel", b =>

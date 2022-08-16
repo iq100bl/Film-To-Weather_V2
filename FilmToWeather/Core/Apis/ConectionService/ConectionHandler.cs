@@ -19,6 +19,10 @@ namespace Core.Api.ConectionService
             {
                 throw new InvalidOperationException("Inquiry not available");
             }
+            catch(FlurlHttpException e) when (e.StatusCode == 400)
+            {
+                throw new InvalidOperationException("Bad request");
+            }
         }
     }
 }

@@ -11,5 +11,6 @@ namespace DatabaseAccess.Entities
         public string Day { get; set; }
         public string Night { get; set; }
         public ICollection<WeatherModel> WeatherModel { get; set; }
+        public ICollection<MainFisitkaForProjectModel> MainFisitkasForProject { get; set; }
     }
 }

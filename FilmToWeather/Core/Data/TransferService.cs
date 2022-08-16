@@ -36,12 +36,20 @@ namespace Core.Data
             }
             else
             {
-                var weatherForCurrentCity = await _weatherApi.GetCurrentWeather(city);
-                var currentCity = _mapper.Map<CityModel>(weatherForCurrentCity);
-                currentCity.Weather = _mapper.Map<WeatherModel>(weatherForCurrentCity);
-                await _context.City.AddAsync(currentCity);
-                await _context.SaveChangesAsync();
-                return currentCity.Id;
+                try
+                {
+                    var weatherForCurrentCity = await _weatherApi.GetCurrentWeather(city);
+                    var currentCity = _mapper.Map<CityModel>(weatherForCurrentCity);
+                    currentCity.Weather = _mapper.Map<WeatherModel>(weatherForCurrentCity);
+                    await _context.City.AddAsync(currentCity);
+                    await _context.SaveChangesAsync();
+                    return currentCity.Id;
+                }
+                catch(InvalidOperationException e)
+                {
+                    //TODO обработать в нужный вид
+                    throw new InvalidOperationException(e.Message);
+                }
             }
         }
     }

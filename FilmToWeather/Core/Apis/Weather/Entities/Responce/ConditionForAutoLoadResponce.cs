@@ -2,7 +2,7 @@
 
 namespace Core.Api.Weather.Entities.Responce
 {
-    public class ConditionForAutoLoadResponce
+    public class ConditionForPreloadResponce
     {
         [JsonProperty("code")]
         public int Code { get; set; }
