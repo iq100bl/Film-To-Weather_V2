@@ -34,18 +34,21 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IMoviesApi, MoviesApi>();
 builder.Services.AddTransient<IWeatherApi, WeatherApi>();
 builder.Services.AddTransient<IConectionHandler, ConectionHandler>();
-builder.Services.AddTransient<IWeatherApiAutoLoad, WeatherApi>();
 builder.Services.AddTransient<ITransferService, TransferService>();
 
-builder.Services.AddTransient<IInitializer, WeatherConditionsToDbPreload>();
+builder.Services.AddSingleton<IWeatherApiPreLoad, WeatherApi>();
+builder.Services.AddSingleton<IMoviesApiPreload, MoviesApi>();
+builder.Services.AddTransient<IInitializer, WeatherConditionsPreload>();
+builder.Services.AddTransient<IInitializer, GenriesPreload>();
+builder.Services.AddTransient<IInitializer, ShufflerWeatherAndGenries>();
 
 builder.Services.AddAutoMapper(typeof(ConditionMappingProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(CityMappingProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(WeathersMappingProfile).Assembly);
 
 var app = builder.Build();
-app.Services.GetServices<IInitializer>().AsParallel().
-    ForAll(x => x.InitializeAsync(app.Services.CreateScope()
+app.Services.GetServices<IInitializer>().AsParallel()
+    .ForAll(x => x.InitializeAsync(app.Services.CreateScope()
     .ServiceProvider.GetRequiredService<ApplicationContext>()));
 
 // Configure the HTTP request pipeline.

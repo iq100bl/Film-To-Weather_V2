@@ -8,7 +8,7 @@ namespace Core.Mapping
     {
         public ConditionMappingProfile()
         {
-            CreateMap<ConditionForAutoLoadResponce, ConditionModel>()
+            CreateMap<ConditionForPreloadResponce, ConditionModel>()
                 .ForMember(dest => dest.WeatherModel, opt => opt.Ignore());
         }
     }

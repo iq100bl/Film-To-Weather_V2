@@ -7,15 +7,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Core.PreLoad
 {
-    public class WeatherConditionsToDbPreload : IInitializer
+    public class WeatherConditionsPreload : IInitializer
     {
-        private readonly IWeatherApiAutoLoad _weatherApiAutoLoad;
+        private readonly IWeatherApiPreLoad _weatherApiPreload;
         private readonly IMapper _mapper;
 
-        public WeatherConditionsToDbPreload(IWeatherApiAutoLoad weatherApiAutoLoad,
+        public WeatherConditionsPreload(IWeatherApiPreLoad weatherApiAutoLoad,
             IMapper mapper)
         {
-            _weatherApiAutoLoad = weatherApiAutoLoad;
+            _weatherApiPreload = weatherApiAutoLoad;
             _mapper = mapper;
         }
 
@@ -24,7 +24,7 @@ namespace Core.PreLoad
             context.Database.OpenConnection();
             try
             {
-                var conditions = _mapper.Map<ConditionModel[]>(await _weatherApiAutoLoad.GetWeatherConditionsDoc());
+                var conditions = _mapper.Map<ConditionModel[]>(await _weatherApiPreload.GetWeatherConditionsDoc());
                 context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.Condition ON");
                 if (context.Condition.Any())
                 {
