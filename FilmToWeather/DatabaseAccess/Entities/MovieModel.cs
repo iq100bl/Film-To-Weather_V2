@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DatabaseAccess.Entities.Abstractions;
 
 namespace DatabaseAccess.Entities
 {
-    public class FilmModel
+    public class MovieModel : BaseEntity
     {
         public int Id { get; set; }
         public bool Adult { get; set; } = false;
@@ -18,6 +14,6 @@ namespace DatabaseAccess.Entities
         public string RuOverview { get; set; }
         public string RuTitle { get; set; }
         public ICollection<GenreModel> Genries { get; set; }
-        public ICollection<User> Users { get; set; }
+        public ICollection<UserMovieData> UserMovieDatas { get; set; }
     }
 }

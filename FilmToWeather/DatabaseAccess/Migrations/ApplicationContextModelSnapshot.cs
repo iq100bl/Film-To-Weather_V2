@@ -65,50 +65,6 @@ namespace DatabaseAccess.Migrations
                     b.ToTable("Condition");
                 });
 
-            modelBuilder.Entity("DatabaseAccess.Entities.FilmModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("Adult")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("EnOverview")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EnPosterPart")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EnTitle")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OriginalTitle")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RuOverview")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RuPosterPart")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RuTitle")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Film");
-                });
-
             modelBuilder.Entity("DatabaseAccess.Entities.GenreModel", b =>
                 {
                     b.Property<int>("Id")
@@ -149,6 +105,55 @@ namespace DatabaseAccess.Migrations
                     b.HasIndex("GenreId");
 
                     b.ToTable("Fisitkas");
+                });
+
+            modelBuilder.Entity("DatabaseAccess.Entities.MovieModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<bool>("Adult")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("EnOverview")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EnPosterPart")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EnTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OriginalTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RuOverview")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RuPosterPart")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RuTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Film");
                 });
 
             modelBuilder.Entity("DatabaseAccess.Entities.User", b =>
@@ -221,6 +226,28 @@ namespace DatabaseAccess.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("DatabaseAccess.Entities.UserMovieData", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("MoviesId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MoviesId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserMovieDatas");
+                });
+
             modelBuilder.Entity("DatabaseAccess.Entities.WeatherModel", b =>
                 {
                     b.Property<Guid>("Id")
@@ -246,7 +273,7 @@ namespace DatabaseAccess.Migrations
                     b.ToTable("Weather");
                 });
 
-            modelBuilder.Entity("FilmModelGenreModel", b =>
+            modelBuilder.Entity("GenreModelMovieModel", b =>
                 {
                     b.Property<int>("FilmsId")
                         .HasColumnType("int");
@@ -259,21 +286,6 @@ namespace DatabaseAccess.Migrations
                     b.HasIndex("GenriesId");
 
                     b.ToTable("GenresFilms", (string)null);
-                });
-
-            modelBuilder.Entity("FilmModelUser", b =>
-                {
-                    b.Property<int>("FilmsId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UsersId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("FilmsId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("UserFilmData", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -439,6 +451,13 @@ namespace DatabaseAccess.Migrations
                     b.Navigation("Genre");
                 });
 
+            modelBuilder.Entity("DatabaseAccess.Entities.MovieModel", b =>
+                {
+                    b.HasOne("DatabaseAccess.Entities.User", null)
+                        .WithMany("Films")
+                        .HasForeignKey("UserId");
+                });
+
             modelBuilder.Entity("DatabaseAccess.Entities.User", b =>
                 {
                     b.HasOne("DatabaseAccess.Entities.CityModel", "City")
@@ -448,6 +467,25 @@ namespace DatabaseAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("City");
+                });
+
+            modelBuilder.Entity("DatabaseAccess.Entities.UserMovieData", b =>
+                {
+                    b.HasOne("DatabaseAccess.Entities.MovieModel", "FilmModel")
+                        .WithMany("UserMovieDatas")
+                        .HasForeignKey("MoviesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DatabaseAccess.Entities.User", "User")
+                        .WithMany("UserMovieDatas")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FilmModel");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DatabaseAccess.Entities.WeatherModel", b =>
@@ -461,9 +499,9 @@ namespace DatabaseAccess.Migrations
                     b.Navigation("Condition");
                 });
 
-            modelBuilder.Entity("FilmModelGenreModel", b =>
+            modelBuilder.Entity("GenreModelMovieModel", b =>
                 {
-                    b.HasOne("DatabaseAccess.Entities.FilmModel", null)
+                    b.HasOne("DatabaseAccess.Entities.MovieModel", null)
                         .WithMany()
                         .HasForeignKey("FilmsId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -472,21 +510,6 @@ namespace DatabaseAccess.Migrations
                     b.HasOne("DatabaseAccess.Entities.GenreModel", null)
                         .WithMany()
                         .HasForeignKey("GenriesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("FilmModelUser", b =>
-                {
-                    b.HasOne("DatabaseAccess.Entities.FilmModel", null)
-                        .WithMany()
-                        .HasForeignKey("FilmsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DatabaseAccess.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -557,6 +580,18 @@ namespace DatabaseAccess.Migrations
             modelBuilder.Entity("DatabaseAccess.Entities.GenreModel", b =>
                 {
                     b.Navigation("MainFisitkasForProject");
+                });
+
+            modelBuilder.Entity("DatabaseAccess.Entities.MovieModel", b =>
+                {
+                    b.Navigation("UserMovieDatas");
+                });
+
+            modelBuilder.Entity("DatabaseAccess.Entities.User", b =>
+                {
+                    b.Navigation("Films");
+
+                    b.Navigation("UserMovieDatas");
                 });
 
             modelBuilder.Entity("DatabaseAccess.Entities.WeatherModel", b =>

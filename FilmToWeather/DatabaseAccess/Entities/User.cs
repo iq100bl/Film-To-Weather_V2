@@ -6,6 +6,7 @@ namespace DatabaseAccess.Entities
     {
         public Guid CityId { get; set; }
         public CityModel City { get; set; }
-        public ICollection<FilmModel> Films { get; set; }
+        public ICollection<MovieModel> Films { get; set; }
+        public ICollection<UserMovieData> UserMovieDatas { get; set; }
     }
 }

@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Data.EntitiesConverter
+namespace DatabaseAccess.Entities.Abstractions
 {
-    public class DtoConverter
+    public abstract class BaseEntity
     {
-
     }
 }

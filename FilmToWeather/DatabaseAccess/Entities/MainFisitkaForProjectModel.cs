@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DatabaseAccess.Entities.Abstractions;
 
 namespace DatabaseAccess.Entities
 {
-    public class MainFisitkaForProjectModel
+    public class MainFisitkaForProjectModel : BaseEntity
     {
         public Guid Id { get; set; }
         public int ConditionCode { get; set; }

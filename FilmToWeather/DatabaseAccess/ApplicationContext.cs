@@ -9,9 +9,10 @@ namespace DatabaseAccess
         public DbSet<CityModel> City { get; set; }
         public DbSet<WeatherModel> Weather { get; set; }
         public DbSet<ConditionModel> Condition { get; set; }
-        public DbSet<FilmModel> Film { get; set; }
+        public DbSet<MovieModel> Film { get; set; }
         public DbSet<GenreModel> Genres { get; set; }
         public DbSet<MainFisitkaForProjectModel> Fisitkas { get; set; }
+        public DbSet<UserMovieData> UserMovieDatas { get; set; }
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
         }
@@ -37,12 +38,7 @@ namespace DatabaseAccess
                 .WithOne(x => x.Condition)
                 .HasForeignKey(x => x.CodeCondition);
 
-            builder.Entity<FilmModel>()
-               .HasMany(x => x.Users)
-               .WithMany(x => x.Films)
-               .UsingEntity(x => x.ToTable("UserFilmData"));
-
-            builder.Entity<FilmModel>()
+            builder.Entity<MovieModel>()
                 .HasMany(x => x.Genries)
                .WithMany(x => x.Films)
                .UsingEntity(x => x.ToTable("GenresFilms"));
@@ -56,6 +52,16 @@ namespace DatabaseAccess
                 .HasOne(x => x.Genre)
                 .WithMany(x => x.MainFisitkasForProject)
                 .HasForeignKey(x => x.GenreId);
+
+            builder.Entity<UserMovieData>()
+                .HasOne(x => x.FilmModel)
+                .WithMany(x => x.UserMovieDatas)
+                .HasForeignKey(x => x.MoviesId);
+
+            builder.Entity<UserMovieData>()
+                .HasOne(x => x.User)
+                .WithMany(x => x.UserMovieDatas)
+                .HasForeignKey(x => x.UserId);
         }
     }
 
