@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using DatabaseAccess.Entities;
 using Core.Data;
+using Core.Mapping.Dbo;
+using DatabaseAccess.DbWorker;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,12 +31,14 @@ builder.Services.AddIdentity<User, IdentityRole>(opt =>
 }).AddEntityFrameworkStores<ApplicationContext>();
 
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddTransient<IMoviesApi, MoviesApi>();
 builder.Services.AddTransient<IWeatherApi, WeatherApi>();
-builder.Services.AddTransient<IConectionHandler, ConectionHandler>();
 builder.Services.AddTransient<ITransferService, TransferService>();
+
+builder.Services.AddTransient<IConectionHandler, ConectionHandler>();
+builder.Services.AddTransient<IActualizerWeather, ActualizerWeather>();
 
 builder.Services.AddSingleton<IWeatherApiPreLoad, WeatherApi>();
 builder.Services.AddSingleton<IMoviesApiPreload, MoviesApi>();
@@ -42,9 +46,16 @@ builder.Services.AddTransient<IInitializer, WeatherConditionsPreload>();
 builder.Services.AddTransient<IInitializer, GenriesPreload>();
 builder.Services.AddTransient<IInitializer, ShufflerWeatherAndGenries>();
 
+builder.Services.AddTransient<ICityDbHandler, CityDbHandler>();
+builder.Services.AddTransient<IFilterDbHandler, FilterDbHandler>();
+builder.Services.AddTransient<IMovieDbHandler, MovieDbHandler>();
+builder.Services.AddTransient<IUserMoviesDataDbHandler, UserMoviesDataDbHandler>();
+builder.Services.AddTransient<IWeatherDbHandler, WeatherDbHandler>();
+
 builder.Services.AddAutoMapper(typeof(ConditionMappingProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(CityMappingProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(WeathersMappingProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(MovieDboMappingProfile).Assembly);
 
 var app = builder.Build();
 app.Services.GetServices<IInitializer>().AsParallel()

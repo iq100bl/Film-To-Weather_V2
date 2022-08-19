@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DatabaseAccess.Entities.Abstractions;
 
 namespace DatabaseAccess.Entities
 {
-    public class WeatherModel
+    public class WeatherModel : BaseEntity
     {
         public Guid Id { get; set; }
         public DateTime TimeUpdate { get; set; }
