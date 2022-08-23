@@ -1,0 +1,18 @@
+﻿@model MovieViewModel[]; 
+
+@foreach(var movie in Model){
+    <div class="card mb-3" style="max-width: 1024px;">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img src=@movie.EnPosterPart class="img-fluid rounded-start" alt="...">
+                <h5 class="card-title">@movie.OriginalTitle</h5>
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">@movie.EnTitle</h5>
+                    <p class="card-text">@movie.EnOverview</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}

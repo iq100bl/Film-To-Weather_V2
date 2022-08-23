@@ -18,6 +18,7 @@ namespace Core.DataPreload
             context.Database.OpenConnection();
             try
             {
+                //TODO найти выход как сделать лучше
                 var genries = await _moviesApi.GetGenries();
                 context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.Genres ON");
                 if (context.Genres.Any())

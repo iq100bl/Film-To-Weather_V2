@@ -4,6 +4,6 @@ namespace Core.Data
 {
     public interface IActualizerWeather
     {
-        Task<WeatherModel> ActualizeWeather(CityModel city);
+        Task<WeatherModel> ActualizeWeather(string userId);
     }
 }

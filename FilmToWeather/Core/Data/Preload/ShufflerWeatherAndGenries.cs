@@ -53,7 +53,7 @@ namespace Core.DataPreload
         }
         private void SetTimer()
         {
-            aTimer = new System.Timers.Timer(15000);
+            aTimer = new System.Timers.Timer(10000);
 
             aTimer.Elapsed += AssociateConditionAndWeather;
             aTimer.AutoReset = true;

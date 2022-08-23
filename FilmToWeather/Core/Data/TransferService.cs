@@ -1,19 +1,11 @@
 ﻿using AutoMapper;
 using Core.Api.Movie;
 using Core.Api.Weather;
-using Core.Api.Weather.Entities.Responce;
 using Core.Data.DboEntityes;
-using DatabaseAccess;
-using DatabaseAccess.DbWorker;
+using DatabaseAccess.DbWorker.UnitOfWork;
 using DatabaseAccess.Entities;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.Data
 {
@@ -22,72 +14,127 @@ namespace Core.Data
         private readonly IWeatherApi _weatherApi;
         private readonly IMapper _mapper;
         private readonly IMoviesApi _moviesApi;
-        private readonly IMovieDbHandler _moviesDbHandler;
-        private readonly ICityDbHandler _cityDbHandler;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IActualizerWeather _actualizerWeather;
-        private readonly IFilterDbHandler _filterDbHandler;
-        private readonly IUserMoviesDataDbHandler _userMoviesDataDbHandler;
         private readonly IHttpContextAccessor _httpContext;
 
         public TransferService(IWeatherApi weatherApi, IMapper mapper, IMoviesApi moviesApi,
-            IMovieDbHandler moviesDbHandler, ICityDbHandler cityDbHandler, IWeatherDbHandler weatherDbHandler,
-            IActualizerWeather actualizerWeather, IFilterDbHandler filterDbHandler, IHttpContextAccessor httpContext, IUserMoviesDataDbHandler userMoviesDataDbHandler)
+            IActualizerWeather actualizerWeather, IHttpContextAccessor httpContext, IUnitOfWork unitOfWork)
         {
             _weatherApi = weatherApi;
             _mapper = mapper;
             _moviesApi = moviesApi;
-            _moviesDbHandler = moviesDbHandler;
-            _cityDbHandler = cityDbHandler;
+            _unitOfWork = unitOfWork;
             _actualizerWeather = actualizerWeather;
-            _filterDbHandler = filterDbHandler;
             _httpContext = httpContext;
-            _userMoviesDataDbHandler = userMoviesDataDbHandler;
         }
 
         public async Task<Guid> ValidityCheckedCityForUser(string city)
         {
             city = string.Concat(char.ToUpper(city[0]), city[1..]);
-            var cityCurrentUser = await _cityDbHandler.Get(x => x.City == city);
-            if (cityCurrentUser != null)
-            {
-                return cityCurrentUser.Id;
-            }
-            else
+            var cityCurrentUser = await _unitOfWork.Cities.Find(x => x.City == city);
+            if (cityCurrentUser.Id == Guid.Empty)
             {
                 try
                 {
                     var weatherForCurrentCity = await _weatherApi.GetCurrentWeather(city);
                     var currentCity = _mapper.Map<CityModel>(weatherForCurrentCity);
                     currentCity.Weather = _mapper.Map<WeatherModel>(weatherForCurrentCity);
-                    await _cityDbHandler.Create(currentCity);
+                    await _unitOfWork.Cities.Create(currentCity);
+                    await _unitOfWork.Save();
                     return currentCity.Id;
                 }
-                catch(InvalidOperationException e)
+                catch (InvalidOperationException e)
                 {
-                    //TODO обработать в нужный вид
                     throw new InvalidOperationException(e.Message);
                 }
             }
+            else
+            {
+                return cityCurrentUser.Id;
+            }
         }
 
-        public async Task<FilmDbo[]> GetRecomenndedFilms(CityModel city, string lang)
+        public async Task<MovieDbo[]> GetRecommendedMovies(string lang)
         {
-            var userId = _httpContext.HttpContext.User.Claims.Single(x => x.Type == ClaimTypes.NameIdentifier).Value;
-            var weather = await _actualizerWeather.ActualizeWeather(city);
-            var filter = await _filterDbHandler.Get(x => x.ConditionCode == weather.CodeCondition);
-            var stringFilter = filter.ToString();
-            if (stringFilter != null)
+            var weather = await _actualizerWeather.ActualizeWeather(GetUserId());
+            var filter = await _unitOfWork.Filters.GetOne(x => x.ConditionCode == weather.CodeCondition, x => x.Genre);
+            if (filter.GenreId != default)
             {
-                var recommendedMovies = _mapper.Map<FilmDbo[]>(await _moviesApi.GetRecommendedFilms(1, stringFilter, lang));
-                var currentMoviesForUser = _mapper.Map<FilmDbo[]>(await _moviesDbHandler.GetMany(x => x.UserMovieDatas.Select(x => x.UserId).ToString() == userId));
-                var recommendedMoviesBeforeFilter = recommendedMovies.ExceptBy(currentMoviesForUser.Select(x => x.Id), x => x.Id).ToList();
-                recommendedMoviesBeforeFilter.ForEach(x => x.Lang = lang);
-                return recommendedMoviesBeforeFilter.ToArray();
+                var recommendedMovies = _mapper.Map<MovieDbo[]>(_moviesApi.GetRecommendedFilms(1, filter.GenreId.ToString(), lang).Result.Movies);
+                var moviesUserData = await _unitOfWork.Movies.FindMany(x => x.UserMovieDatas.Select(x => x.UserId).First() == GetUserId(),
+                    x => x.UserMovieDatas);
+                var currentMoviesForUser = _mapper.Map<MovieDbo[]>(moviesUserData);
+                var recommendedMoviesAfterFilter = recommendedMovies.ExceptBy(currentMoviesForUser.Select(x => x.Id), x => x.Id).ToList();
+                var genries = await _unitOfWork.Genre.GetAll();
+                recommendedMoviesAfterFilter.ForEach(movie =>
+                {
+                    movie.Genries = genries.IntersectBy(movie.Genries.Select(genre => genre.Id), movie => movie.Id).ToArray();
+                    movie.Lang = lang;
+                });
+                return recommendedMoviesAfterFilter.ToArray();
             }
             else
             {
                 throw new InvalidOperationException($"{nameof(filter)} is null");
             }
+        }
+
+        public async Task SaveMovie(MovieDbo movie, bool isWathed)
+        {
+            var detailsAboutMovie = _mapper.Map<MovieDbo>(await _moviesApi.GetDetailsMovieForAnotherLang(movie.Id, movie.Lang));
+            var movieWithDetails = JoinInfoAboutMovie(movie.Lang == "En-en" ? (movie, detailsAboutMovie) : (detailsAboutMovie, movie));
+            var userData = new UserMovieData
+            {
+                UserId = GetUserId(),
+                FilmModel = movieWithDetails,
+                Id = Guid.NewGuid(),
+                IsWathced = isWathed,
+                MoviesId = movieWithDetails.Id
+            };
+
+            await _unitOfWork.UserMoviesData.Create(userData);
+        }
+
+
+
+        public MovieDbo[] GetAllUserMovies()
+        {
+            return _mapper.Map<MovieDbo[]>(_unitOfWork.UserMoviesData.GetMany(x => x.UserId == GetUserId()));
+        }
+
+        public async Task ChachingWathed(MovieDbo movieDbo)
+        {
+            var userMovieData = await _unitOfWork.UserMoviesData.GetOne(x => x.UserId == GetUserId() && x.MoviesId == movieDbo.Id);
+            userMovieData.IsWathced = !userMovieData.IsWathced;
+            await _unitOfWork.UserMoviesData.Update(userMovieData);
+        }
+
+        private string GetUserId()
+        {
+            return _httpContext.HttpContext.User.Claims.Single(x => x.Type == ClaimTypes.NameIdentifier).Value;
+        }
+
+        private string GetUserCity()
+        {
+            return _httpContext.HttpContext.User.Claims.Single(x => x.Type == ClaimTypes.NameIdentifier).Value;
+        }
+
+        private MovieModel JoinInfoAboutMovie((MovieDbo, MovieDbo) value)
+        {
+            return _mapper.Map<MovieModel>(new MovieDbo
+            {
+                Adult = value.Item1.Adult,
+                EnOverview = value.Item1.EnOverview,
+                EnPosterPath = value.Item1.EnPosterPath,
+                EnTitle = value.Item1.EnTitle,
+                Genries = value.Item1.Genries,
+                Id = value.Item1.Id,
+                OriginalTitle = value.Item1.OriginalTitle,
+                RuOverview = value.Item2.RuOverview,
+                RuPosterPath = value.Item2.RuPosterPath,
+                RuTitle = value.Item2.RuTitle
+            });
         }
     }
 }
