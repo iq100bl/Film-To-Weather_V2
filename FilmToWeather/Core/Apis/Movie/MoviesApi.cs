@@ -14,7 +14,7 @@ namespace Core.Api.Movie
         private readonly string _languageEn = "en-US";
         private readonly string _languageRu = "ru-RU";
         private readonly string _genresMovies = "genre/movie/list";
-        private readonly string _recommendedMovies = "genre/movie/list";
+        private readonly string _recommendedMovies = "discover/movie";
         private readonly string _movieDetails = "movie";
         private readonly IConectionHandler _conectionHandler;
 
@@ -40,7 +40,7 @@ namespace Core.Api.Movie
 
         public async Task<MoviesResponce> GetRecommendedFilms(int page, string filters, string language)
         {
-            var movies = _moviesBaseUrl.AppendPathSegment(_recommendedMovies)
+            var moviesUrl = _moviesBaseUrl.AppendPathSegment(_recommendedMovies)
                 .SetQueryParams(new
                 {
                     api_key = _moviesApiKey,
@@ -52,7 +52,9 @@ namespace Core.Api.Movie
                     with_genres = filters, // , это и (2C&) | это или 7C&
                     with_watch_monetization_types = "flatrate"
                 });
-            return await _conectionHandler.CallApi(() => movies.GetJsonAsync<MoviesResponce>());
+            var movies = await _conectionHandler.CallApi(() => moviesUrl.GetJsonAsync<MoviesResponce>());
+            movies.Movies.ToList().ForEach(x => x.Language = language);
+            return movies;
         }
 
         public async Task<GenreModel[]> GetGenries()

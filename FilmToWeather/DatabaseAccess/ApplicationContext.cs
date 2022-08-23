@@ -31,7 +31,7 @@ namespace DatabaseAccess
             builder.Entity<CityModel>()
                 .HasOne(x => x.Weather)
                 .WithOne(x => x.City)
-                .HasForeignKey<CityModel>(x => x.Id);
+                .HasForeignKey<WeatherModel>(x => x.CityId);
 
             builder.Entity<ConditionModel>()
                 .HasMany(x => x.WeatherModel)

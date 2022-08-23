@@ -20,12 +20,14 @@ namespace Core.Api.Movie.Entities.Response
         public string Release_date { get; set; }
 
         [JsonProperty("genre_ids")]
-        public ICollection<GenreEnResponce> Genres { get; set; }
+        public ICollection<int> GenresId { get; set; }
 
         [JsonProperty("original_title")]
         public string OriginalTitle { get; set; }
 
         [JsonProperty("title")]
         public string Title { get; set; }
+        [JsonIgnore]
+        public string Language { get; set; }
     }
 }

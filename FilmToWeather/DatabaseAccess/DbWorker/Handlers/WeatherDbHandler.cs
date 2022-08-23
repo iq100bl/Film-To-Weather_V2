@@ -1,6 +1,7 @@
-﻿using DatabaseAccess.Entities;
+﻿using DatabaseAccess.DbWorker.Handlers.Common;
+using DatabaseAccess.Entities;
 
-namespace DatabaseAccess.DbWorker
+namespace DatabaseAccess.DbWorker.Repositories
 {
     public class WeatherDbHandler : GenericDbHandler<WeatherModel>, IWeatherDbHandler
     {

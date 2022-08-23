@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DatabaseAccess.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20220819163346_InitialMigrations")]
+    [Migration("20220821201342_InitialMigrations")]
     partial class InitialMigrations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,6 +27,7 @@ namespace DatabaseAccess.Migrations
             modelBuilder.Entity("DatabaseAccess.Entities.CityModel", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("City")
@@ -234,6 +235,9 @@ namespace DatabaseAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("IsWathced")
+                        .HasColumnType("bit");
+
                     b.Property<int>("MoviesId")
                         .HasColumnType("int");
 
@@ -256,6 +260,9 @@ namespace DatabaseAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("CityId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("CodeCondition")
                         .HasColumnType("int");
 
@@ -269,6 +276,9 @@ namespace DatabaseAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CityId")
+                        .IsUnique();
 
                     b.HasIndex("CodeCondition");
 
@@ -423,17 +433,6 @@ namespace DatabaseAccess.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("DatabaseAccess.Entities.CityModel", b =>
-                {
-                    b.HasOne("DatabaseAccess.Entities.WeatherModel", "Weather")
-                        .WithOne("City")
-                        .HasForeignKey("DatabaseAccess.Entities.CityModel", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Weather");
-                });
-
             modelBuilder.Entity("DatabaseAccess.Entities.MainFisitkaForProjectModel", b =>
                 {
                     b.HasOne("DatabaseAccess.Entities.ConditionModel", "Condition")
@@ -492,11 +491,19 @@ namespace DatabaseAccess.Migrations
 
             modelBuilder.Entity("DatabaseAccess.Entities.WeatherModel", b =>
                 {
+                    b.HasOne("DatabaseAccess.Entities.CityModel", "City")
+                        .WithOne("Weather")
+                        .HasForeignKey("DatabaseAccess.Entities.WeatherModel", "CityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("DatabaseAccess.Entities.ConditionModel", "Condition")
                         .WithMany("WeatherModel")
                         .HasForeignKey("CodeCondition")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("City");
 
                     b.Navigation("Condition");
                 });
@@ -570,6 +577,9 @@ namespace DatabaseAccess.Migrations
             modelBuilder.Entity("DatabaseAccess.Entities.CityModel", b =>
                 {
                     b.Navigation("Users");
+
+                    b.Navigation("Weather")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DatabaseAccess.Entities.ConditionModel", b =>
@@ -594,12 +604,6 @@ namespace DatabaseAccess.Migrations
                     b.Navigation("Films");
 
                     b.Navigation("UserMovieDatas");
-                });
-
-            modelBuilder.Entity("DatabaseAccess.Entities.WeatherModel", b =>
-                {
-                    b.Navigation("City")
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
