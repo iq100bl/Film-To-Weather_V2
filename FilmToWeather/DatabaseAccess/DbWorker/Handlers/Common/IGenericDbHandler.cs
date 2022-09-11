@@ -9,7 +9,7 @@ namespace DatabaseAccess.DbWorker.Handlers.Common
         public Task Create(TEntity entity);
         public Task Update(TEntity entity);
         Task<TEntity> GetOne(Expression<Func<TEntity, bool>> filter);
-        Task<TEntity> GetOne(Expression<Func<TEntity, bool>> filter,
+        Task<TEntity?> FindOne(Expression<Func<TEntity, bool>> filter,
             params Expression<Func<TEntity, object>>[] includeProperties);
         Task<TEntity[]> GetMany(Expression<Func<TEntity, bool>> filter);
         Task<TEntity[]> GetMany(Expression<Func<TEntity, bool>> filter,

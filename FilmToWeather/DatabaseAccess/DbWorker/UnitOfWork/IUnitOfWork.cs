@@ -1,5 +1,10 @@
-﻿using DatabaseAccess.DbWorker.Handlers;
-using DatabaseAccess.DbWorker.Repositories;
+﻿using DatabaseAccess.DbWorker.Handlers.AdminManager;
+using DatabaseAccess.DbWorker.Handlers.City;
+using DatabaseAccess.DbWorker.Handlers.Filter;
+using DatabaseAccess.DbWorker.Handlers.Genre;
+using DatabaseAccess.DbWorker.Handlers.Movie;
+using DatabaseAccess.DbWorker.Handlers.UserMoviesData;
+using DatabaseAccess.DbWorker.Handlers.Weather;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +21,7 @@ namespace DatabaseAccess.DbWorker.UnitOfWork
         IUserMoviesDataDbHandler UserMoviesData{ get; }
         IWeatherDbHandler Weather { get; }
         IGenreDbHandler Genre { get; }
-
+        IAdminManagerDbHandler AdminManager { get; }
         Task Save();
     }
 }

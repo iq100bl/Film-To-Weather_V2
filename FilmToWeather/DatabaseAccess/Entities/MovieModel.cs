@@ -1,11 +1,14 @@
 ﻿using DatabaseAccess.Entities.Abstractions;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DatabaseAccess.Entities
 {
     public class MovieModel : BaseEntity
     {
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
-        public bool Adult { get; set; } = false;
+        public bool Adult { get; set; }
         public string OriginalTitle { get; set; }
         public string EnPosterPart { get; set; }
         public string EnOverview { get; set; }

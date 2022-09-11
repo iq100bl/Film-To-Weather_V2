@@ -1,0 +1,38 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model IdentityRole[]
+
+<h2>Roles list</h2>
+
+<a class="btn btn-sm btn-primary" asp-controller="AdminUsersManager" asp-action="Index">Users List</a>
+<a class="btn btn-sm btn-primary" asp-action="Create">Create role</a>
+
+@if (Model.Length == 0)
+{
+    return;
+}
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<table class="table table-striped table-responsive-md btn-table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Role name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Model.Length; i++)
+        {
+
+            var role = Model[i];
+            <tr>
+                <th scope="row">@(i + 1)</th>
+                <td>@role.Name</td>
+                <td>
+                    <a asp-action="Details" asp-route-roleName="@role.Name" method="get">Details</a>
+                    <a asp-action="Delete" asp-route-roleName="@role.Name" method="get">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

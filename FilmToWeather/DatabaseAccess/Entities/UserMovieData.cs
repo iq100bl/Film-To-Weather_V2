@@ -9,7 +9,7 @@ namespace DatabaseAccess.Entities
         public string UserId { get; set; }
         public User User { get; set; }
         public int MoviesId { get; set; }
-        public MovieModel FilmModel { get; set; }
+        public MovieModel MovieModel { get; set; }
         public bool IsWathced { get; set; }
 
     }

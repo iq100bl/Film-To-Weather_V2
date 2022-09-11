@@ -1,16 +1,14 @@
-﻿using AutoMapper;
-using Core.Data;
+﻿using Core.Data;
 using Core.Data.DboEntityes;
 using Microsoft.AspNetCore.Mvc;
 using WebApplicationMVC.Models;
-using static System.Net.WebRequestMethods;
 
 namespace WebApplicationMVC.Controllers
 {
     public class FilmToWeatherController : Controller
     {
         private readonly ITransferService _transferService;
-        private readonly List<MovieDbo> currentRecommendedMovies;
+        private static readonly List<MovieDbo> moviesDbo = new();
         public FilmToWeatherController(ITransferService transferService)
         {
             _transferService = transferService;
@@ -18,31 +16,44 @@ namespace WebApplicationMVC.Controllers
 
         public async Task<IActionResult> Index()
         {
-            //TODO добавить маппер
-            var recommendedMovies = await _transferService.GetRecommendedMovies("en-US");
-            currentRecommendedMovies.AddRange(await _transferService.GetRecommendedMovies("en-US"));
-            var movieViewModels = recommendedMovies.Select(x => new MovieViewModel 
-            {
-                Id = x.Id,
-                EnOverview = x.EnOverview, 
-                EnPosterPart = "https://image.tmdb.org/t/p/w300" + x.EnPosterPath, 
-                EnTitle = x.EnTitle, 
-                GenriesEn = x.Genries.Select(x => x.EnName).ToString(), 
-                GenriesRu = x.Genries.Select(x => x.RuName).ToString(), 
-                OriginalTitle = x.OriginalTitle, 
-                IsWathed = x.IsWathed,
-                RuOverview = x.RuOverview, 
-                RuPosterPart = "https://image.tmdb.org/t/p/w500" + x.RuPosterPath, 
-                RuTitle = x.RuTitle 
-            }).ToArray();
-            return View(movieViewModels);
+            moviesDbo.Clear();
+            moviesDbo.AddRange(await _transferService.GetRecommendedMovies("en-US"));
+            return View(MappingDboToViewModel(moviesDbo));
         }
 
-        public async Task<ActionResult> SaveMovie(int id)
+        public async Task<IActionResult> SaveMovie(int movieId, bool isWathed)
         {
-            var x = currentRecommendedMovies.Single(x => x.Id == id);
-            currentRecommendedMovies.Remove(x);
-            return View();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var movieForSave = moviesDbo.SingleOrDefault(x => x.Id == movieId);
+            if (movieForSave == null)
+            {
+                return NotFound();
+            }
+            moviesDbo.Remove(movieForSave);
+            await _transferService.SaveMovie(movieForSave!, isWathed);
+            return View("Index", MappingDboToViewModel(moviesDbo));
+        }
+
+        private MovieViewModel[] MappingDboToViewModel(List<MovieDbo> movieDbos)
+        {
+            return movieDbos.Select(x => new MovieViewModel
+            {
+                Id = x.Id,
+                EnOverview = x.EnOverview,
+                EnPosterPart = "https://image.tmdb.org/t/p/w300" + x.EnPosterPath,
+                EnTitle = x.EnTitle,
+                GenriesEn = x.Genries.Select(x => x.EnName).ToString(),
+                GenriesRu = x.Genries.Select(x => x.RuName).ToString(),
+                OriginalTitle = x.OriginalTitle,
+                IsWathed = x.IsWathed,
+                RuOverview = x.RuOverview,
+                RuPosterPart = "https://image.tmdb.org/t/p/w500" + x.RuPosterPath,
+                RuTitle = x.RuTitle
+            }).ToArray();
         }
     }
 }

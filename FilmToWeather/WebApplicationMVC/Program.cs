@@ -9,9 +9,15 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using DatabaseAccess.Entities;
 using Core.Data;
-using DatabaseAccess.DbWorker.Repositories;
 using DatabaseAccess.DbWorker.UnitOfWork;
-using DatabaseAccess.DbWorker.Handlers;
+using DatabaseAccess.DbWorker.Handlers.City;
+using DatabaseAccess.DbWorker.Handlers.Filter;
+using DatabaseAccess.DbWorker.Handlers.Genre;
+using DatabaseAccess.DbWorker.Handlers.Movie;
+using DatabaseAccess.DbWorker.Handlers.UserMoviesData;
+using DatabaseAccess.DbWorker.Handlers.Weather;
+using DatabaseAccess.DbWorker.Handlers.AdminManager;
+using DatabaseAccess.DbWorker.Handlers.Fisitkas;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,12 +38,12 @@ builder.Services.AddIdentity<User, IdentityRole>(opt =>
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddTransient<IMoviesApi, MoviesApi>();
 builder.Services.AddTransient<IWeatherApi, WeatherApi>();
 builder.Services.AddTransient<IConectionHandler, ConectionHandler>();
 builder.Services.AddTransient<IActualizerWeather, ActualizerWeather>();
-builder.Services.AddTransient<ApplicationContext, ApplicationContext>();
 
 builder.Services.AddTransient<ITransferService, TransferService>();
 
@@ -54,6 +60,8 @@ builder.Services.AddTransient<IMovieDbHandler, MovieDbHandler>();
 builder.Services.AddTransient<IUserMoviesDataDbHandler, UserMoviesDataDbHandler>();
 builder.Services.AddTransient<IWeatherDbHandler, WeatherDbHandler>();
 builder.Services.AddTransient<IGenreDbHandler, GenreDbHandler>();
+builder.Services.AddTransient<IFisitkasDbHandler, FisitkasDbHandler>();
+builder.Services.AddTransient<IAdminManagerDbHandler, AdminManagerDbHandler>();
 
 builder.Services.AddAutoMapper(typeof(ConditionMappingProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(CityMappingProfile).Assembly);
@@ -81,6 +89,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseResponseCaching();
 
 app.UseAuthentication();
 app.UseAuthorization();

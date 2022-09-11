@@ -52,11 +52,29 @@ namespace DatabaseAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Film",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    Adult = table.Column<bool>(type: "bit", nullable: false),
+                    OriginalTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EnPosterPart = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EnOverview = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EnTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RuPosterPart = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RuOverview = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RuTitle = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Film", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Genres",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     EnName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RuName = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -172,6 +190,30 @@ namespace DatabaseAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "GenresFilms",
+                columns: table => new
+                {
+                    FilmsId = table.Column<int>(type: "int", nullable: false),
+                    GenriesId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GenresFilms", x => new { x.FilmsId, x.GenriesId });
+                    table.ForeignKey(
+                        name: "FK_GenresFilms_Film_FilmsId",
+                        column: x => x.FilmsId,
+                        principalTable: "Film",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GenresFilms_Genres_GenriesId",
+                        column: x => x.GenriesId,
+                        principalTable: "Genres",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
@@ -257,56 +299,6 @@ namespace DatabaseAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Film",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Adult = table.Column<bool>(type: "bit", nullable: false),
-                    OriginalTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EnPosterPart = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EnOverview = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EnTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RuPosterPart = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RuOverview = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RuTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Film", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Film_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "GenresFilms",
-                columns: table => new
-                {
-                    FilmsId = table.Column<int>(type: "int", nullable: false),
-                    GenriesId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GenresFilms", x => new { x.FilmsId, x.GenriesId });
-                    table.ForeignKey(
-                        name: "FK_GenresFilms_Film_FilmsId",
-                        column: x => x.FilmsId,
-                        principalTable: "Film",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_GenresFilms_Genres_GenriesId",
-                        column: x => x.GenriesId,
-                        principalTable: "Genres",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "UserMovieDatas",
                 columns: table => new
                 {
@@ -331,6 +323,26 @@ namespace DatabaseAccess.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[] { "e37499a7-8d84-4583-b438-547ef61bd120", "daaa8132-f6d9-4956-9f08-89633bd6657c", "admin", "ADMIN" });
+
+            migrationBuilder.InsertData(
+                table: "City",
+                columns: new[] { "Id", "City", "Country", "Region" },
+                values: new object[] { new Guid("73176a03-47db-4395-b149-a5bd6308e9a3"), "Batumi", "Georgia", "Ajaria" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "CityId", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "3b8b489d-05ca-4837-a57d-7b7d0315ae7b", 0, new Guid("73176a03-47db-4395-b149-a5bd6308e9a3"), "f2d2aa52-84f2-41a2-b98c-250d01334d99", "xata.94@mail.ru", false, false, null, "XATA.94@MAIL.RU", "XATA.94@MAIL.RU", "AQAAAAEAACcQAAAAEEfFge4ndnlq/qeXTOHYJlxR4v84k2jsRMKcYkb9t8+PwGMkKgpvQJdnhrsamrFpIA==", null, false, "b5c4d1fc-b1ae-4166-9e5a-1bdafc7ad1c7", false, "xata.94@mail.ru" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[] { "e37499a7-8d84-4583-b438-547ef61bd120", "3b8b489d-05ca-4837-a57d-7b7d0315ae7b" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -375,11 +387,6 @@ namespace DatabaseAccess.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Film_UserId",
-                table: "Film",
-                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Fisitkas_ConditionCode",
@@ -454,13 +461,13 @@ namespace DatabaseAccess.Migrations
                 name: "Genres");
 
             migrationBuilder.DropTable(
+                name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
                 name: "Film");
 
             migrationBuilder.DropTable(
                 name: "Condition");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "City");

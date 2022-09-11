@@ -18,8 +18,4 @@
     <ProjectReference Include="..\DatabaseAccess\DatabaseAccess.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Data\Cashing\" />
-  </ItemGroup>
-
 </Project>

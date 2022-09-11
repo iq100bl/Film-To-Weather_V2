@@ -18,7 +18,7 @@ namespace Core.Mapping
                 .ForMember(dest => dest.City, opt => opt.MapFrom(x => x.Location.City))
                 .ForMember(dest => dest.Weather, opt => opt.Ignore())
                 .ForMember(dest => dest.Region, opt => opt.MapFrom(x => x.Location.Region))
-                .ForMember(dest => dest.Country, opt => opt.MapFrom(x => x.Location.Region))
+                .ForMember(dest => dest.Country, opt => opt.MapFrom(x => x.Location.Country))
                 .ForMember(dest => dest.Users, opt => opt.Ignore());
 
             CreateMap<LocalResponce, CityModel>()

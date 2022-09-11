@@ -1,6 +1,7 @@
 ﻿@model MovieViewModel[];
 
-@foreach(var movie in Model){
+@foreach (var movie in Model)
+{
     <div class="card mb-3" style="max-width: 1024px;">
         <div class="row g-0">
             <div class="col-md-4">
@@ -12,13 +13,12 @@
                     <h5 class="card-title">@movie.EnTitle</h5>
                     <p class="card-text">@movie.EnOverview</p>
                 </div>
+                <div class="navbar-toggler">You looked movie: @movie.IsWathed
+                </div>
             </div>
             <a class="btn btn-primary btn-lg" asp-area=""
-                asp-controller="FilmToWeather" asp-action="SaveMovie" 
-                asp-route-movieId="@movie.Id" asp-route-isWathed="false">Add to myself list</a>
-            <a class="btn btn-success btn-lg" asp-area="" 
-                asp-controller="FilmToWeather"asp-action="SaveMovie"
-                asp-route-movieId="@movie.Id" asp-route-isWathed="true">Add to watchlist</a>
+           asp-controller="UserRoom" asp-action="Change"
+           asp-route-movieId="@movie.Id">Change status</a>
         </div>
     </div>
 }
