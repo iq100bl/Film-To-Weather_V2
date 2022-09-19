@@ -3,7 +3,7 @@ i want revive my project, to write code with zero and deploy in internet.
 Development plan:
 * Write the main part of the server.-Completed
 * Make MVC implementation for test. -Completed
-* Make part to build filters. Add roles. -Complited
+* Make part to build filters. Add roles. -Completed
 * Implement final design (react or native js).
 * Deploy to internet.
 * Telegram bot. 
