@@ -1,0 +1,20 @@
+﻿@model FisitkasViewModel
+<form asp-action="Save" asp-all-route-data= "Model.Fisitkas" method="post">
+    @foreach (var fisitka in Model.Fisitkas)
+    {
+        <div style="column-count:3" >
+               <div>
+                    @fisitka.Key
+               </div>
+            <div>
+                <text>
+                    @fisitka.Value
+                </text>
+            </div>
+            <div>
+                @Html.DropDownListFor(x => x.Fisitkas[fisitka.Key], new SelectList(Model.Genres.Select(x => x.EnName)), @fisitka.Value);
+            </div>
+        </div>
+    }
+    <input type="submit" value="Save">
+</form>

@@ -2,6 +2,7 @@
 using DatabaseAccess.DbWorker.Handlers.City;
 using DatabaseAccess.DbWorker.Handlers.Common;
 using DatabaseAccess.DbWorker.Handlers.Filter;
+using DatabaseAccess.DbWorker.Handlers.Fisitkas;
 using DatabaseAccess.DbWorker.Handlers.Genre;
 using DatabaseAccess.DbWorker.Handlers.Movie;
 using DatabaseAccess.DbWorker.Handlers.UserMoviesData;
@@ -19,9 +20,10 @@ namespace DatabaseAccess.DbWorker.UnitOfWork
         public IWeatherDbHandler Weather { get; }
         public IGenreDbHandler Genre { get; }
         public IAdminManagerDbHandler AdminManager { get; }
+        public IFisitkasDbHandler Fisitkas { get; }
 
         public UnitOfWork(IWeatherDbHandler weatherDbHandler, IUserMoviesDataDbHandler userMoviesDataDbHandler,
-            ICityDbHandler handler, IFilterDbHandler filter, IMovieDbHandler movieDbHandler, ApplicationContext context, IGenreDbHandler genre, IAdminManagerDbHandler adminDb)
+            ICityDbHandler handler, IFilterDbHandler filter, IMovieDbHandler movieDbHandler, ApplicationContext context, IGenreDbHandler genre, IAdminManagerDbHandler adminDb, IFisitkasDbHandler fisitkas)
         {
             Weather = weatherDbHandler;
             UserMoviesData = userMoviesDataDbHandler;
@@ -31,6 +33,7 @@ namespace DatabaseAccess.DbWorker.UnitOfWork
             _context = context;
             Genre = genre;
             AdminManager = adminDb;
+            Fisitkas = fisitkas;
         }
 
         public async Task Save()
