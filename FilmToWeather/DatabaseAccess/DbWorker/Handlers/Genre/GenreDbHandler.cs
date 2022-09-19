@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DatabaseAccess.DbWorker.Handlers
+namespace DatabaseAccess.DbWorker.Handlers.Genre
 {
     public class GenreDbHandler : GenericDbHandler<GenreModel>, IGenreDbHandler
     {

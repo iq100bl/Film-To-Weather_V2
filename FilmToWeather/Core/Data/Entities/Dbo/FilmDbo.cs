@@ -21,7 +21,7 @@ namespace Core.Data.DboEntityes
         public string RuOverview { get; set; }
         public string RuTitle { get; set; }
         public ICollection<GenreModel> Genries { get; set; }
-        public bool IsWathed { get; set;}
+        public bool IsWathed { get; set; }
         public string Lang { get; set; }
     }
 }

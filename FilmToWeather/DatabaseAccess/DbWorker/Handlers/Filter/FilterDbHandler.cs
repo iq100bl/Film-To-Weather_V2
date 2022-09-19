@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DatabaseAccess.DbWorker.Repositories
+namespace DatabaseAccess.DbWorker.Handlers.Filter
 {
-    public class MovieDbHandler : GenericDbHandler<MovieModel>, IMovieDbHandler
+    public class FilterDbHandler : GenericDbHandler<MainFisitkaForProjectModel>, IFilterDbHandler
     {
-        public MovieDbHandler(ApplicationContext context) : base(context)
+        public FilterDbHandler(ApplicationContext context) : base(context)
         {
         }
     }

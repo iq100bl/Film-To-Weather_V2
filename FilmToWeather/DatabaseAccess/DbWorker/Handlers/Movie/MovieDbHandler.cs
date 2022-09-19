@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DatabaseAccess.DbWorker.Repositories
+namespace DatabaseAccess.DbWorker.Handlers.Movie
 {
-    public class UserMoviesDataDbHandler : GenericDbHandler<UserMovieData>, IUserMoviesDataDbHandler
+    public class MovieDbHandler : GenericDbHandler<MovieModel>, IMovieDbHandler
     {
-        public UserMoviesDataDbHandler(ApplicationContext context) : base(context)
+        public MovieDbHandler(ApplicationContext context) : base(context)
         {
         }
     }

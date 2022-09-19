@@ -1,11 +1,12 @@
 ﻿using DatabaseAccess.Entities.Abstractions;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DatabaseAccess.Entities
 {
     public class GenreModel : BaseEntity
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
         public string EnName { get; set; }
         public string RuName { get; set; }

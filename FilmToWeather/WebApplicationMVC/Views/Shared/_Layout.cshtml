@@ -28,7 +28,19 @@
                         @if (User.Identity!.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="FilmToWeather" asp-action="Index">Movies</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="FilmToWeather" asp-action="Index">Get recommended movies</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="UserRoom" asp-action="Index">My list of movies</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="AdminUsersManager" asp-action="Index">Admin</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="FisitkasSetting" asp-action="Index">Fisitkas</a>
                             </li>
                         }
                     </ul>

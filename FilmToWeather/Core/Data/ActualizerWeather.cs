@@ -1,13 +1,7 @@
 ﻿using AutoMapper;
 using Core.Api.Weather;
-using DatabaseAccess.DbWorker.Repositories;
 using DatabaseAccess.DbWorker.UnitOfWork;
 using DatabaseAccess.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.Data
 {
@@ -26,7 +20,7 @@ namespace Core.Data
 
         public async Task<WeatherModel> ActualizeWeather(string userId)
         {
-            var weather = await _unitOfWork.Weather.GetOne(x => x.City.Users.Select(x => x.Id).First() == userId, x => x.City);
+            var weather = await _unitOfWork.Weather.FindOne(x => x.City.Users.Select(x => x.Id).SingleOrDefault() == userId, x => x.Condition, x => x.City);
             if (weather != null)
             {
                 if (weather.TimeUpdate.Day != DateTime.UtcNow.Day)
@@ -37,12 +31,11 @@ namespace Core.Data
             }
             else
             {
-                var city = await _unitOfWork.Cities.Find(x => x.Users.Select(x => x.Id).ToString() == userId);
-                weather = _mapper.Map<WeatherModel>(await _weatherApi.GetCurrentWeather(city.City));
+                var city = await _unitOfWork.Cities.GetOne(x => x.Users.Select(y => y.Id).Single() == userId);
+                weather = _mapper.Map<WeatherModel>(await _weatherApi.GetCurrentWeather(city!.City));
                 await _unitOfWork.Weather.Create(weather);
             }
 
-            await _unitOfWork.Save();
             return weather;
         }
     }

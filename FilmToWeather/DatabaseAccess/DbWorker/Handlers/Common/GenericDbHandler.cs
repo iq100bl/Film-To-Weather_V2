@@ -21,10 +21,9 @@ namespace DatabaseAccess.DbWorker.Handlers.Common
             _dbSet = context.Set<TEntity>();
         }
 
-        public Task Create(TEntity entity)
+        public async Task Create(TEntity entity)
         {
-            _dbSet.AddAsync(entity);
-            return Task.CompletedTask;
+            await _dbSet.AddAsync(entity);
         }
 
         public Task Update(TEntity entity)
@@ -44,14 +43,10 @@ namespace DatabaseAccess.DbWorker.Handlers.Common
             return Task.FromResult(result);
         }
 
-        public Task<TEntity> GetOne(Expression<Func<TEntity, bool>> filter,
+        public Task<TEntity?> FindOne(Expression<Func<TEntity, bool>> filter,
             params Expression<Func<TEntity, object>>[] includeProperties)
         {
-            var result = Include(includeProperties).Where(filter).First();
-            if (result == null)
-            {
-                throw new InvalidOperationException($"{nameof(TEntity)} does not exist");
-            }
+            var result = Include(includeProperties).SingleOrDefault(filter);
 
             return Task.FromResult(result);
         }

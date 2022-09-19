@@ -1,0 +1,17 @@
+﻿@using DatabaseAccess.Entities
+@model RoleDetailsViewModel
+
+<h2>Roles @Model.RoleName</h2>
+
+    <div class="form-group">
+    <table>
+        @foreach (User user in Model.UsersInRole)
+        {
+        <form asp-controller="AdminUsersManager" asp-action="Details" asp-route-Id="@user.Id">
+            <button type="submit" class="btn btn-sm btn-danger">
+                @user.UserName
+            </button>
+        </form>
+        }
+    </table>
+    </div>

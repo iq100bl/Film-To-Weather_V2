@@ -41,7 +41,6 @@ namespace Core.Data
                     var currentCity = _mapper.Map<CityModel>(weatherForCurrentCity);
                     currentCity.Weather = _mapper.Map<WeatherModel>(weatherForCurrentCity);
                     await _unitOfWork.Cities.Create(currentCity);
-                    await _unitOfWork.Save();
                     return currentCity.Id;
                 }
                 catch (InvalidOperationException e)
@@ -58,8 +57,8 @@ namespace Core.Data
         public async Task<MovieDbo[]> GetRecommendedMovies(string lang)
         {
             var weather = await _actualizerWeather.ActualizeWeather(GetUserId());
-            var filter = await _unitOfWork.Filters.GetOne(x => x.ConditionCode == weather.CodeCondition, x => x.Genre);
-            if (filter.GenreId != default)
+            var filter = await _unitOfWork.Filters.FindOne(x => x.ConditionCode == weather.CodeCondition, x => x.Genre);
+            if (filter!.GenreId != default)
             {
                 var recommendedMovies = _mapper.Map<MovieDbo[]>(_moviesApi.GetRecommendedFilms(1, filter.GenreId.ToString(), lang).Result.Movies);
                 var moviesUserData = await _unitOfWork.Movies.FindMany(x => x.UserMovieDatas.Select(x => x.UserId).First() == GetUserId(),
@@ -83,39 +82,33 @@ namespace Core.Data
         public async Task SaveMovie(MovieDbo movie, bool isWathed)
         {
             var detailsAboutMovie = _mapper.Map<MovieDbo>(await _moviesApi.GetDetailsMovieForAnotherLang(movie.Id, movie.Lang));
-            var movieWithDetails = JoinInfoAboutMovie(movie.Lang == "En-en" ? (movie, detailsAboutMovie) : (detailsAboutMovie, movie));
+            var movieWithDetails = JoinInfoAboutMovie(movie.Lang == "En-en" ? (detailsAboutMovie, movie) : (movie, detailsAboutMovie));
+            movieWithDetails.Genries = (await _unitOfWork.Genre.GetAll()).Intersect(movieWithDetails.Genries).ToList();
             var userData = new UserMovieData
             {
                 UserId = GetUserId(),
-                FilmModel = movieWithDetails,
-                Id = Guid.NewGuid(),
                 IsWathced = isWathed,
-                MoviesId = movieWithDetails.Id
+                MovieModel = movieWithDetails
             };
-
             await _unitOfWork.UserMoviesData.Create(userData);
+            await _unitOfWork.Save();
         }
 
-
-
-        public MovieDbo[] GetAllUserMovies()
+        public async Task<MovieDbo[]> GetAllUserMovies()
         {
-            return _mapper.Map<MovieDbo[]>(_unitOfWork.UserMoviesData.GetMany(x => x.UserId == GetUserId()));
+            var userMoviesData = await _unitOfWork.UserMoviesData.GetMany(x => x.UserId == GetUserId(), x => x.MovieModel, x => x.MovieModel.Genries);
+            return _mapper.Map<MovieDbo[]>(userMoviesData);
         }
 
-        public async Task ChachingWathed(MovieDbo movieDbo)
+        public async Task ChangingWathed(MovieDbo movieDbo)
         {
             var userMovieData = await _unitOfWork.UserMoviesData.GetOne(x => x.UserId == GetUserId() && x.MoviesId == movieDbo.Id);
             userMovieData.IsWathced = !userMovieData.IsWathced;
             await _unitOfWork.UserMoviesData.Update(userMovieData);
+            await _unitOfWork.Save();
         }
 
         private string GetUserId()
-        {
-            return _httpContext.HttpContext.User.Claims.Single(x => x.Type == ClaimTypes.NameIdentifier).Value;
-        }
-
-        private string GetUserCity()
         {
             return _httpContext.HttpContext.User.Claims.Single(x => x.Type == ClaimTypes.NameIdentifier).Value;
         }

@@ -43,6 +43,15 @@ namespace DatabaseAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("City");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("73176a03-47db-4395-b149-a5bd6308e9a3"),
+                            City = "Batumi",
+                            Country = "Georgia",
+                            Region = "Ajaria"
+                        });
                 });
 
             modelBuilder.Entity("DatabaseAccess.Entities.ConditionModel", b =>
@@ -69,10 +78,7 @@ namespace DatabaseAccess.Migrations
             modelBuilder.Entity("DatabaseAccess.Entities.GenreModel", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("EnName")
                         .IsRequired()
@@ -111,10 +117,7 @@ namespace DatabaseAccess.Migrations
             modelBuilder.Entity("DatabaseAccess.Entities.MovieModel", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<bool>("Adult")
                         .HasColumnType("bit");
@@ -147,12 +150,7 @@ namespace DatabaseAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Film");
                 });
@@ -225,6 +223,25 @@ namespace DatabaseAccess.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "3b8b489d-05ca-4837-a57d-7b7d0315ae7b",
+                            AccessFailedCount = 0,
+                            CityId = new Guid("73176a03-47db-4395-b149-a5bd6308e9a3"),
+                            ConcurrencyStamp = "f2d2aa52-84f2-41a2-b98c-250d01334d99",
+                            Email = "xata.94@mail.ru",
+                            EmailConfirmed = false,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "XATA.94@MAIL.RU",
+                            NormalizedUserName = "XATA.94@MAIL.RU",
+                            PasswordHash = "AQAAAAEAACcQAAAAEEfFge4ndnlq/qeXTOHYJlxR4v84k2jsRMKcYkb9t8+PwGMkKgpvQJdnhrsamrFpIA==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "b5c4d1fc-b1ae-4166-9e5a-1bdafc7ad1c7",
+                            TwoFactorEnabled = false,
+                            UserName = "xata.94@mail.ru"
+                        });
                 });
 
             modelBuilder.Entity("DatabaseAccess.Entities.UserMovieData", b =>
@@ -323,6 +340,15 @@ namespace DatabaseAccess.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "e37499a7-8d84-4583-b438-547ef61bd120",
+                            ConcurrencyStamp = "daaa8132-f6d9-4956-9f08-89633bd6657c",
+                            Name = "admin",
+                            NormalizedName = "ADMIN"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -410,6 +436,13 @@ namespace DatabaseAccess.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "3b8b489d-05ca-4837-a57d-7b7d0315ae7b",
+                            RoleId = "e37499a7-8d84-4583-b438-547ef61bd120"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -450,13 +483,6 @@ namespace DatabaseAccess.Migrations
                     b.Navigation("Genre");
                 });
 
-            modelBuilder.Entity("DatabaseAccess.Entities.MovieModel", b =>
-                {
-                    b.HasOne("DatabaseAccess.Entities.User", null)
-                        .WithMany("Films")
-                        .HasForeignKey("UserId");
-                });
-
             modelBuilder.Entity("DatabaseAccess.Entities.User", b =>
                 {
                     b.HasOne("DatabaseAccess.Entities.CityModel", "City")
@@ -470,7 +496,7 @@ namespace DatabaseAccess.Migrations
 
             modelBuilder.Entity("DatabaseAccess.Entities.UserMovieData", b =>
                 {
-                    b.HasOne("DatabaseAccess.Entities.MovieModel", "FilmModel")
+                    b.HasOne("DatabaseAccess.Entities.MovieModel", "MovieModel")
                         .WithMany("UserMovieDatas")
                         .HasForeignKey("MoviesId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -482,7 +508,7 @@ namespace DatabaseAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("FilmModel");
+                    b.Navigation("MovieModel");
 
                     b.Navigation("User");
                 });
@@ -599,8 +625,6 @@ namespace DatabaseAccess.Migrations
 
             modelBuilder.Entity("DatabaseAccess.Entities.User", b =>
                 {
-                    b.Navigation("Films");
-
                     b.Navigation("UserMovieDatas");
                 });
 #pragma warning restore 612, 618

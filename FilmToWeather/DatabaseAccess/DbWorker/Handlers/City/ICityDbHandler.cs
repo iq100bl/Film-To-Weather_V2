@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DatabaseAccess.DbWorker.Repositories
+namespace DatabaseAccess.DbWorker.Handlers.City
 {
     public interface ICityDbHandler : IGenericDbHandler<CityModel>
     {
